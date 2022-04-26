@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+:root{
+  --color-purple:#5752e6;
+  --color-green:#47FCDE;
+  --color-light-purple:#C378F6;
+  --color-orange:#FFA16F;
+  --color-gray:#E9E9EA;
+  --color-bg:#101116;
+  --color-chart-title-bg: #191A1F;
+}
+
+* > * {
+  font-family: 'Space Grotesk', sans-serif;
+  margin:0px;
+  padding:0px;
+}
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.font-orbitron{
+  font-family: 'Orbitron', sans-serif;
+}
+body{
+  background-color: var(--color-bg);
+}
+.pt_header{
+  background-color: var(--color-bg);
+  color: var(--color-gray);
+}
+
+.bg-theme{
+  background-color: var(--color-bg);
+}
+.bg-orange{
+  background-color: var(--color-orange);
+}
+.bg-purple{
+  background-color: var(--color-purple);
+}
+.bg-neon-green{
+  background-color: var(--color-green);
+}
+.chart .title{
+  position:absolute;
+  top:40%;
+}
+.title_background{
+  position:absolute;
+  left: 7%;
+  top:7%;
+  background: var(--color-chart-title-bg);
+  width: 86%;
+  height: 86%;
+  border-radius: 999px;
+}
+.bg-theme-2{
+  background: var(--color-chart-title-bg);
+}
+.labels img{
+  width: 24px;
+  height: 24px;
+}
