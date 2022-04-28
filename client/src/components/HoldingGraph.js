@@ -1,8 +1,9 @@
 import React,  { useState,useEffect,useContext } from 'react'
-import { AreaChart,Area,XAxis,YAxis,Tooltip,ResponsiveContainer } from "recharts";
+import { AreaChart,Area,Tooltip,ResponsiveContainer } from "recharts";
 import { HoldingList } from './HoldingList';
 import { AppContext } from "../context/AppContext";
 import millify from 'millify';
+import { ShimmerThumbnail,ShimmerTable } from "react-shimmer-effects";
 import * as api from '../api'
 
   export const HoldingGraph = () => {
@@ -11,18 +12,30 @@ import * as api from '../api'
     const [isErr,setIsErr] = useState(0);
     const [portfolioData,setPortfolioData] = useState([]);
 
-    const { walletAddress,walletNetworkId,walletBalance,walletCurrency} = useContext(AppContext);
+    const { walletAddress,walletNetworkId,walletBalance,walletCurrency,holdingBlockChanged} = useContext(AppContext);
     
 
     let graph_component;
     let list_component;
 
     useEffect(() => {
-        if(walletAddress && walletNetworkId){
+        if(walletAddress && walletNetworkId && !holdingBlockChanged){
            fetchData({chain_id:walletNetworkId,address:walletAddress})
         }
-    }, [walletAddress,walletNetworkId])
+        if(holdingBlockChanged){
+            fetchDataWithOutShimmer({chain_id:walletNetworkId,address:walletAddress})
+        }
+    }, [walletAddress,walletNetworkId,holdingBlockChanged])
 
+    const fetchDataWithOutShimmer = async(params) => {
+        let data = await api.fetchPortfolio(params);
+        console.log(data);
+        if(data!="") { 
+            setPortfolioData(data);  
+            document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
+            document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
+        }
+    }
     const fetchData = async(params) => {
         try{
             setIsLoading(1);
@@ -61,12 +74,12 @@ import * as api from '../api'
    
     
     if(isLoading){
-        graph_component = <div>Fetching</div>;
-        list_component = <div className="text-white">Fetching</div>;
+        graph_component = <ShimmerThumbnail height={300} rounded className="dark-shimmer"/>;
+        list_component = <div className="dark-shimmer"><ShimmerTable row={5} col={5} className="dark-shimmer"/></div>;
         
     }else if(isLoading==0 && isErr==0){
         graph_component = graph(portfolioData.data);
-        list_component = <HoldingList Token_data={portfolioData.data[0].token_data_response}></HoldingList>
+        list_component = <HoldingList TokenData={portfolioData.data[0].token_data_response} BlockTokenData={portfolioData.data[0].block_token_data_response}></HoldingList>
     }else if(isErr){
         graph_component = <div>Error While Fetching</div>;
         list_component = <div className="text-white">Error While Fetching</div>;

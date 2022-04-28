@@ -65,3 +65,13 @@ body{
   width: 24px;
   height: 24px;
 }
+
+.dark-shimmer{
+  background: linear-gradient(to right, #191a1fa1 8%, #191a1fc4 18%, #191a1feb 33%) !important;
+}
+.dark-shimmer .shimmer-table-col {
+  background: linear-gradient(to right, #1011168c 8%, #101116 18%, #101116f2 33%) !important;
+}
+.dark-shimmer .shimmer-table-row {
+  background-color: #191a1f;
+}

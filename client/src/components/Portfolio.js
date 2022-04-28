@@ -6,6 +6,7 @@ export const Portfolio = () => {
     return (
         <div className="container mx-auto flex flex-wrap">
             <HoldingGraph></HoldingGraph>
+            <PortfolioChart></PortfolioChart>
         </div>
     )
 }

@@ -12,6 +12,7 @@ export const AppProvider = ({children}) => {
     const [walletNetworkId, setWalletNetworkId] = useState("");
     const [walletCurrency, setWalletCurrency] = useState("")
     const [walletBalance, setWalletBalance] = useState("")
+    const [holdingBlockChanged, setHoldingBlockChanged] = useState("")
 
     const chainList =[
         {
@@ -124,7 +125,9 @@ export const AppProvider = ({children}) => {
             walletAddress,
             walletBalance,
             walletNetworkId,
-            walletCurrency
+            walletCurrency,
+            holdingBlockChanged,
+            setHoldingBlockChanged
           }}
         >
           {children}

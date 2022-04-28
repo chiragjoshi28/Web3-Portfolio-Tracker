@@ -11,4 +11,9 @@ routes.route('/api/getPortfolioValueHistory')
 .get(TransactionController.getPortfolioValueHistory);
 
 
+//http://localhost:8080/api/blockShitCoin?blockStatus=1&contract_address=0x6f6699652d4733ad422a610780c43cfd919d9a86&chain_id=56
+routes.route('/api/blockShitCoin')
+.get(TransactionController.blockShitCoin);
+
+
 module.exports = routes;

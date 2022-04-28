@@ -23,6 +23,7 @@ async function getPortfolioValueHistory(req,res){
 
                 const chart_data_response = [];
                 const token_data_response = [];
+                const block_token_data_response = [];
                 let start = moment().format("YYYY-MM-DD");
                 let end = moment().subtract(30, 'days').format("YYYY-MM-DD");
                 console.log(start+" - "+end);
@@ -37,7 +38,7 @@ async function getPortfolioValueHistory(req,res){
                         v1.chart_data.map(v=>{
                             timestamp = moment(v.timestamp).format("YYYY-MM-DD")
                             if(end===timestamp){
-                                if(v.close.quote) { balance_data = balance_data + v.close.quote; }
+                                if(v.close.quote && !v1.blockStatus) { balance_data = balance_data + v.close.quote; }
                                 if(_priceUsd===null){ _priceUsd = v.close.quote; } 
                             }
                         })
@@ -53,9 +54,11 @@ async function getPortfolioValueHistory(req,res){
                                 logo_url:v1.logo_url,
                                 balance:v1.balance,
                                 priceUsd:_priceUsd,
-                                valueUsd:v1.balance*_priceUsd
+                                valueUsd:v1.balance*_priceUsd,
+                                blockStatus:v1.blockStatus
                             };
-                            token_data_response.push(token_obj);
+                            if(v1.blockStatus) block_token_data_response.push(token_obj);
+                            else token_data_response.push(token_obj);
                         }
                     })
                     
@@ -65,7 +68,7 @@ async function getPortfolioValueHistory(req,res){
                     end = moment(end).add(1,'days').format("YYYY-MM-DD");
                 }
                 console.log('End');
-                result2.push({chart_data_response,token_data_response})
+                result2.push({chart_data_response,token_data_response,block_token_data_response})
             };
                ChartData();
                res.json(result2);
@@ -73,6 +76,22 @@ async function getPortfolioValueHistory(req,res){
     }
 }
 
+
+async function blockShitCoin(req,res){
+    if(!req.body) return res.status(400).json("Post HTTP Data not Provided");
+    blockStatusParams = req.query.blockStatus;
+    contract_addressParams = req.query.contract_address;
+    chain_idParams = req.query.chain_id;
+    console.log(blockStatusParams+" "+contract_addressParams+" "+chain_idParams)
+    if(blockStatusParams && contract_addressParams && chain_idParams){
+        model.Holding_item.
+        findOneAndUpdate({contract_address:contract_addressParams,chain_id:chain_idParams},{blockStatus: blockStatusParams},function(err,doc){
+            if (!doc) return res.send(404, {error: "okkkkkkkk Holding not found"});
+            return res.send("ShitCoin Marked untracked");
+        });
+    }
+}
 module.exports = {
-    getPortfolioValueHistory
+    getPortfolioValueHistory,
+    blockShitCoin
 }
