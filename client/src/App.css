@@ -75,3 +75,29 @@ body{
 .dark-shimmer .shimmer-table-row {
   background-color: #191a1f;
 }
+
+.div-network-icon{
+    height: 26px;
+    width: 26px;
+    background-color: white;
+    border-radius: 1000px;
+}
+
+.network-id-1{
+  background-image: url("/public/images/explorer/etherscan.png");
+  background-size: 24px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.network-id-56{
+  background-image: url("/public/images/explorer/bscscan.png");
+  background-size: 24px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.network-id-137{
+  background-image: url("/public/images/explorer/polygonscan.svg");
+  background-size: 22px;
+  background-repeat: no-repeat;
+  background-position: center;
+}

@@ -1,5 +1,5 @@
 import React,{useContext} from 'react'
-import millify from "millify";
+import { getPrecisedData } from '../helper/helper'
 import * as api from '../api'
 import { AppContext } from "../context/AppContext";
 import {BiHide,BiShow} from 'react-icons/bi'
@@ -32,7 +32,7 @@ export const HoldingList = (props) => {
 
     return (
         <div className="Token-List">
-            {(props.TokenData)
+            {(props.TokenData.length)
             ? <table className="table-auto border-collapse table-auto w-full text-sm text-white">
                 <thead>
                     <tr>
@@ -49,7 +49,8 @@ export const HoldingList = (props) => {
             </table>
             : 'No Holding Found for this Token'
             }
-            {(props.BlockTokenData)
+            { 
+            (props.BlockTokenData.length)
             ? <table className="table-auto border-collapse table-auto w-full text-sm text-white mt-8">
                 <thead>
                     <tr>
@@ -74,14 +75,6 @@ export const HoldingList = (props) => {
 function addDefaultSrc(e){
     e.target.src = "/images/blank.png";
 }
-
-const getPrecisedData = (value) => {
-    if(value<Number.MAX_SAFE_INTEGER){
-    if(value) return millify(value,{precision: 8}) 
-    else return '0.0000' 
-    }
-    return '0.00';
-}
 function TokenList({ data , handlerBlock }){
     return(
         <tr>
@@ -94,7 +87,7 @@ function TokenList({ data , handlerBlock }){
             </td>
             <td className="border-b border-slate-700 p-4 text-slate-500 dark:text-slate-400">
                 <h2 className="text-white text-sm">
-                ${getPrecisedData(data.priceUsd.$numberDecimal)}  
+                $ {getPrecisedData(data.priceUsd.$numberDecimal)}  
                 </h2>
             </td>
             <td className="border-b border-slate-700 p-4 text-slate-500 dark:text-slate-400">
@@ -104,11 +97,16 @@ function TokenList({ data , handlerBlock }){
             </td>
             <td className="border-b border-slate-700 p-4 text-slate-500 dark:text-slate-400">
                 <h2 className="text-white text-sm">
-                ${getPrecisedData(data.priceUsd.$numberDecimal*data.balance.$numberDecimal)}  
+                $ {getPrecisedData(data.valueUsd.$numberDecimal)}  
                 </h2>
             </td>
             <td className="border-b border-slate-700 p-4 text-slate-500 dark:text-slate-400">
-                <button className="bg-rose-500 hover:bg-rose-800 text-white px-2 py-1 rounded" onClick={handlerBlock} data-contract_address={ data.contract_address  ?? ''}><BiHide style={{'pointer-events' :'none'}}></BiHide></button>
+                <div className="flex">
+                <button className="bg-rose-500 hover:bg-rose-800 text-white px-2 py-1 rounded mr-2" onClick={handlerBlock} data-contract_address={ data.contract_address  ?? ''}><BiHide style={{'pointerEvents' :'none'}}></BiHide></button>
+                <a href={"https://bscscan.com/token/"+data.contract_address} target="_blank">
+                    <div className={"div-network-icon network-id-"+data.chain_id }></div>
+                </a>
+                </div>
             </td>
         </tr>
         
@@ -141,7 +139,12 @@ function BlockTokenList({ data , handlerUnblock }){
                 </h2>
             </td>
             <td className="border-b border-slate-700 p-4 text-slate-500 dark:text-slate-400">
-                <button className="bg-rose-500 hover:bg-rose-800 text-white px-2 py-1 rounded" onClick={handlerUnblock} data-contract_address={ data.contract_address  ?? ''}><BiShow style={{'pointer-events' :'none'}}></BiShow></button>
+                <div className="flex">
+                    <button className="bg-rose-500 hover:bg-rose-800 text-white px-2 py-1 mr-2 rounded" onClick={handlerUnblock} data-contract_address={ data.contract_address  ?? ''}><BiShow style={{'pointerEvents' :'none'}}></BiShow></button>
+                    <a href={"https://bscscan.com/token/"+data.contract_address} target="_blank">
+                        <div className={"div-network-icon network-id-"+data.chain_id }></div>
+                    </a>
+                </div>
             </td>
         </tr>
         

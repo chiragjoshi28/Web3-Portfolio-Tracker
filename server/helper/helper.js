@@ -1,28 +1,15 @@
-const colorArray = [ '#FFFF00',
-'#FFFF33',
-'#F2EA02',
-'#E6FB04',
-'#FF0000',
-'#FD1C03',
-'#FF3300',
-'#FF6600',
-'#00FF00',
-'#00FF33',
-'#00FF66',
-'#33FF00',
-'#00FFFF',
-'#099FFF',
-'#0062FF',
-'#0033FF',
-'#FF00FF',
-'#FF00CC',
-'#FF0099',
-'#CC00FF',
-'#9D00FF',
-'#CC00FF',
-'#6E0DD0',
-'#9900FF'
-];
+const getRGB_Array = (number) => {
+    const RGB_colors = [];
+    for(let i=0;i<number;i++)
+    {
+        var num = Math.round(0xffffff * Math.random());
+        var r = num >> 16;
+        var g = num >> 8 & 255;
+        var b = num & 255;
+        RGB_colors[i] = `rgb(${r},${g},${b})`;
+    }
+    return RGB_colors;
+}
 module.exports = {
-    colorArray
+    getRGB_Array
 }

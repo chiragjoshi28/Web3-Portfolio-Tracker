@@ -1,25 +1,28 @@
 const model = require('../models/models');
 const moment = require('moment');
-const { response } = require('express');
+const helper = require('../helper/helper')
+require('dotenv').config({ path : "./config.env"});
+const TRACK_USD_VALUE_ABOVE=0.1
 
 async function getPortfolioValueHistory(req,res){
     if(!req.body) return res.status(400).json("Post HTTP Data not Provided");
     chain_id = req.query.chain_id;
     address = req.query.address;
+    
     let result2 = [];
     if(chain_id && address){
         model.Holding_item.find({
             user_address:address,
             chain_id:chain_id,
             contract_name:{$ne:null},
-            balance:{$ne:null},
-            priceUSD:{$ne:null},
-            valueUSD:{$ne:null}
-        })
+            balance:{$ne:0},
+            priceUsd:{$ne:null},
+            valueUsd:{$ne:null},
+        }).sort({valueUsd:-1})
         .then(result => {
 
             const ChartData = async _ => {
-                console.log('Start');
+                console.log("Start");
 
                 const chart_data_response = [];
                 const token_data_response = [];
@@ -27,22 +30,23 @@ async function getPortfolioValueHistory(req,res){
                 let start = moment().format("YYYY-MM-DD");
                 let end = moment().subtract(30, 'days').format("YYYY-MM-DD");
                 console.log(start+" - "+end);
-                let _priceUsd,_valueUsd;
 
-                for(i=0;i<=30;i++){
-                    let balance_data = 0;
+                for(i=0;i<=30;i++){ //For 30 Days
+                    let valueUsd_data = 0;
                     result.map(v1 => {
-                        _priceUsd = v1.priceUsd;
-                        _valueUsd = v1.valueUSD;
-                        
+
                         v1.chart_data.map(v=>{
                             timestamp = moment(v.timestamp).format("YYYY-MM-DD")
                             if(end===timestamp){
-                                if(v.close.quote && !v1.blockStatus) { balance_data = balance_data + v.close.quote; }
-                                if(_priceUsd===null){ _priceUsd = v.close.quote; } 
+                                //we don't want to add untracked coin balance in 30days chart i.e, v1.blockStatus is checked
+                                if(v.close.quote && !v1.blockStatus) { valueUsd_data = valueUsd_data + v.close.quote; } //(here quote=balance*price )
                             }
                         })
-                        if(i==0 && _priceUsd!=null){
+
+                        
+
+                        if(i==0 && v1.balance && v1.priceUsd){
+                            // Only Inserting Token we are useful
                             const token_obj = { 
                                 user_address:v1.user_address,
                                 chain_id:v1.chain_id,
@@ -53,8 +57,8 @@ async function getPortfolioValueHistory(req,res){
                                 quote_currency:v1.quote_currency,
                                 logo_url:v1.logo_url,
                                 balance:v1.balance,
-                                priceUsd:_priceUsd,
-                                valueUsd:v1.balance*_priceUsd,
+                                priceUsd:v1.priceUsd,
+                                valueUsd:v1.valueUsd,
                                 blockStatus:v1.blockStatus
                             };
                             if(v1.blockStatus) block_token_data_response.push(token_obj);
@@ -62,9 +66,9 @@ async function getPortfolioValueHistory(req,res){
                         }
                     })
                     
-                    const chart_obj = { date:end,balance:balance_data };
+                    const chart_obj = { date:end,balance:valueUsd_data };
                     // console.log(chart_obj);
-                    if(balance_data) { chart_data_response.push(chart_obj); }
+                    if(valueUsd_data) { chart_data_response.push(chart_obj); }
                     end = moment(end).add(1,'days').format("YYYY-MM-DD");
                 }
                 console.log('End');
@@ -78,7 +82,7 @@ async function getPortfolioValueHistory(req,res){
 
 
 async function blockShitCoin(req,res){
-    if(!req.body) return res.status(400).json("Post HTTP Data not Provided");
+    if(!req.body) return res.status(400).json("HTTP Data not Provided");
     blockStatusParams = req.query.blockStatus;
     contract_addressParams = req.query.contract_address;
     chain_idParams = req.query.chain_id;
@@ -91,7 +95,38 @@ async function blockShitCoin(req,res){
         });
     }
 }
+
+async function getTokenPortfolio(req,res){
+    chain_id = req.query.chain_id;
+    address = req.query.address;
+    let response = [];
+    if(chain_id && address){
+        model.Holding_item.find({
+            user_address:address,
+            chain_id:chain_id,
+            contract_name:{$ne:null},
+            balance:{$ne:null},
+            priceUsd:{$ne:null},
+            blockStatus:{$ne:1},
+            valueUsd:{$ne:null},
+        }).gt('valueUsd',TRACK_USD_VALUE_ABOVE).sort({valueUsd:-1})
+        .then(result => { 
+            const WaitForData = async _ => {
+                let graph_data = [];
+                let graph_token = [];
+                graph_token.push(result);
+                result.map(v1=>{
+                    graph_data.push(parseFloat(v1.valueUsd.toString()))
+                })     
+                response.push({graph_token:graph_token,graph_data:graph_data,graph_token_colors:helper.getRGB_Array(graph_data.length)})
+            }
+            WaitForData();
+            res.json(response);
+        });
+    }
+}
 module.exports = {
     getPortfolioValueHistory,
-    blockShitCoin
+    blockShitCoin,
+    getTokenPortfolio
 }

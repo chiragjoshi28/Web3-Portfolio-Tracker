@@ -1,5 +1,5 @@
 import React,{ useContext} from 'react'
-import { MdDashboard,MdQrCode } from "react-icons/md";
+import { MdDashboard } from "react-icons/md";
 import { AppContext } from "../context/AppContext";
 
 export const Header = () => {

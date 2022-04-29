@@ -2,7 +2,7 @@ import React,  { useState,useEffect,useContext } from 'react'
 import { AreaChart,Area,Tooltip,ResponsiveContainer } from "recharts";
 import { HoldingList } from './HoldingList';
 import { AppContext } from "../context/AppContext";
-import millify from 'millify';
+import { getPrecisedData } from '../helper/helper'
 import { ShimmerThumbnail,ShimmerTable } from "react-shimmer-effects";
 import * as api from '../api'
 
@@ -10,9 +10,9 @@ import * as api from '../api'
       
     const [isLoading,setIsLoading] = useState(1);
     const [isErr,setIsErr] = useState(0);
-    const [portfolioData,setPortfolioData] = useState([]);
+    const [holdingData,setHoldingData] = useState([]);
 
-    const { walletAddress,walletNetworkId,walletBalance,walletCurrency,holdingBlockChanged} = useContext(AppContext);
+    const { walletAddress,walletNetworkId,holdingBlockChanged} = useContext(AppContext);
     
 
     let graph_component;
@@ -28,10 +28,10 @@ import * as api from '../api'
     }, [walletAddress,walletNetworkId,holdingBlockChanged])
 
     const fetchDataWithOutShimmer = async(params) => {
-        let data = await api.fetchPortfolio(params);
-        console.log(data);
+        let data = await api.fetchHolding(params);
+        //console.log(data);
         if(data!="") { 
-            setPortfolioData(data);  
+            setHoldingData(data);  
             document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
             document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
         }
@@ -39,10 +39,10 @@ import * as api from '../api'
     const fetchData = async(params) => {
         try{
             setIsLoading(1);
-            const data = await api.fetchPortfolio(params);
+            const data = await api.fetchHolding(params);
             console.log(data);
             if(data!="") { 
-                setPortfolioData(data);  
+                setHoldingData(data);  
                 document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
                 document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
                 setIsLoading(0);
@@ -55,13 +55,7 @@ import * as api from '../api'
             console.log(err);
         }
     }
-    const getPrecisedData = (value) => {
-        if(value<Number.MAX_SAFE_INTEGER){
-        if(value) return millify(value,{precision: 2}) 
-        else return '0.0000' 
-        }
-        return '0.00';
-    }
+    
 
     const CustomTooltip = ({ active, payload, label }) => {
         if (active && payload && payload.length) {
@@ -74,12 +68,12 @@ import * as api from '../api'
    
     
     if(isLoading){
-        graph_component = <ShimmerThumbnail height={300} rounded className="dark-shimmer"/>;
+        graph_component = <ShimmerThumbnail height={230} rounded className="dark-shimmer"/>;
         list_component = <div className="dark-shimmer"><ShimmerTable row={5} col={5} className="dark-shimmer"/></div>;
         
     }else if(isLoading==0 && isErr==0){
-        graph_component = graph(portfolioData.data);
-        list_component = <HoldingList TokenData={portfolioData.data[0].token_data_response} BlockTokenData={portfolioData.data[0].block_token_data_response}></HoldingList>
+        graph_component = graph(holdingData.data);
+        list_component = <HoldingList TokenData={holdingData.data[0].token_data_response} BlockTokenData={holdingData.data[0].block_token_data_response}></HoldingList>
     }else if(isErr){
         graph_component = <div>Error While Fetching</div>;
         list_component = <div className="text-white">Error While Fetching</div>;
