@@ -1,10 +1,9 @@
 import millify from 'millify';
-import _, { random, values } from 'lodash';
-import moment from 'moment';
+import _ from 'lodash';
 
 export const getPrecisedData = (value,precisionNumber="") => {
     if(value<Number.MAX_SAFE_INTEGER){
-        if(precisionNumber!="") return millify(value,{precision:precisionNumber}); 
+        if(precisionNumber!=="") return millify(value,{precision:precisionNumber}); 
         if(value>1) return millify(value,{precision: 2})
         if(value>0.01 && value<1) return millify(value,{precision: 2})
         if(value>0.001 && value<0.01) return millify(value,{precision: 3})

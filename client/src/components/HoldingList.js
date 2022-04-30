@@ -103,7 +103,7 @@ function TokenList({ data , handlerBlock }){
             <td className="border-b border-slate-700 p-4 text-slate-500 dark:text-slate-400">
                 <div className="flex">
                 <button className="bg-rose-500 hover:bg-rose-800 text-white px-2 py-1 rounded mr-2" onClick={handlerBlock} data-contract_address={ data.contract_address  ?? ''}><BiHide style={{'pointerEvents' :'none'}}></BiHide></button>
-                <a href={"https://bscscan.com/token/"+data.contract_address} target="_blank">
+                <a href={"https://bscscan.com/token/"+data.contract_address} target="_blank" rel="noreferrer">
                     <div className={"div-network-icon network-id-"+data.chain_id }></div>
                 </a>
                 </div>
@@ -141,7 +141,7 @@ function BlockTokenList({ data , handlerUnblock }){
             <td className="border-b border-slate-700 p-4 text-slate-500 dark:text-slate-400">
                 <div className="flex">
                     <button className="bg-rose-500 hover:bg-rose-800 text-white px-2 py-1 mr-2 rounded" onClick={handlerUnblock} data-contract_address={ data.contract_address  ?? ''}><BiShow style={{'pointerEvents' :'none'}}></BiShow></button>
-                    <a href={"https://bscscan.com/token/"+data.contract_address} target="_blank">
+                    <a href={"https://bscscan.com/token/"+data.contract_address} target="_blank" rel="noreferrer">
                         <div className={"div-network-icon network-id-"+data.chain_id }></div>
                     </a>
                 </div>

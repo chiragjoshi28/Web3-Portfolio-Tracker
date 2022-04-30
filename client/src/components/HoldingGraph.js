@@ -39,7 +39,7 @@ import * as api from '../api'
     const fetchDataWithOutShimmer = async(params) => {
         let data = await api.fetchHolding(params);
         //console.log(data);
-        if(data!="") { 
+        if(data!=="") { 
             setHoldingData(data);  
             document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
             document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
@@ -50,7 +50,7 @@ import * as api from '../api'
             setIsLoading(1);
             const data = await api.fetchHolding(params);
             //console.log(data);
-            if(data!="") { 
+            if(data!=="") { 
                 setHoldingData(data);  
                 document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
                 document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
@@ -80,7 +80,7 @@ import * as api from '../api'
         graph_component = <ShimmerThumbnail height={228} rounded className="dark-shimmer"/>;
         list_component = <div className="dark-shimmer"><ShimmerTable row={5} col={5} className="dark-shimmer"/></div>;
         
-    }else if(isLoading==0 && isErr==0){
+    }else if(!isLoading && !isErr){
         graph_component = graph(holdingData.data);
         list_component = <HoldingList TokenData={holdingData.data[0].token_data_response} BlockTokenData={holdingData.data[0].block_token_data_response}></HoldingList>
     }else if(isErr){

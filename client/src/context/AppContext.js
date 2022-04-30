@@ -44,7 +44,7 @@ export const AppProvider = ({children}) => {
             
             if(window.ethereum.networkVersion){
                 chainList.map( (v,i) => {
-                    if(window.ethereum.networkVersion == v.id)
+                    if(window.ethereum.networkVersion === v.id)
                     {
                         setWalletNetworkId(v.id);
                         setWalletCurrency(v.currency);
@@ -82,7 +82,7 @@ export const AppProvider = ({children}) => {
             
             if(window.ethereum.networkVersion){
                 chainList.map( (v,i) => {
-                    if(window.ethereum.networkVersion == v.id)
+                    if(window.ethereum.networkVersion === v.id)
                     {
                         setWalletNetworkId(v.id);
                         setWalletCurrency(v.currency);

@@ -38,7 +38,7 @@ export const PortfolioChart = () => {
     const fetchDataWithOutShimmer = async(params) => {
       let data = await api.fetchPortfolio(params);
       //console.log(data);
-      if(data!="") { 
+      if(data!=="") { 
         setPortfolioData(data);  
         document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
         setIsLoading(0);
@@ -48,7 +48,7 @@ export const PortfolioChart = () => {
       try{
           setIsLoading(1);
           const data = await api.fetchPortfolio(params);
-          if(data!="") { 
+          if(data!=="") { 
             //console.log(data);
               setPortfolioData(data);  
               document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
@@ -68,7 +68,7 @@ export const PortfolioChart = () => {
     graph_component = <ShimmerCircularImage size={300} className="dark-shimmer py-8"/>;
     list_component = <div className="dark-shimmer ml-4"><ShimmerTable row={5} col={2} className="dark-shimmer"/></div>;
     
-  }else if(isLoading==0 && isErr==0){
+  }else if(!isLoading && !isErr){
       graph_component = <Doughnut { ...setChartData(portfolioData.data[0].graph_data,portfolioData.data[0].graph_token_colors) } />;
       list_component = <PortfolioLables TokenList={portfolioData.data[0].graph_token[0]} TokenColor={portfolioData.data[0].graph_token_colors}></PortfolioLables>
   }else if(isErr){
