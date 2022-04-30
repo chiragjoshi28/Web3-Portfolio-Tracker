@@ -9,6 +9,7 @@
     "ethers": "^5.6.4",
     "lodash": "^4.17.21",
     "millify": "^4.0.0",
+    "moment": "^2.29.3",
     "react": "^17.0.2",
     "react-chartjs-2": "^4.1.0",
     "react-dom": "^17.0.2",

@@ -1,5 +1,6 @@
 import millify from 'millify';
-import _, { values } from 'lodash';
+import _, { random, values } from 'lodash';
+import moment from 'moment';
 
 export const getPrecisedData = (value,precisionNumber="") => {
     if(value<Number.MAX_SAFE_INTEGER){
@@ -49,3 +50,4 @@ export const setChartData = (values,colors)=>{
 export const getSumArrayWith2Digits = (values) => {
     return getPrecisedData(_.sum(values),2);
 }
+

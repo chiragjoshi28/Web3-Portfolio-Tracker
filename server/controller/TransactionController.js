@@ -27,9 +27,8 @@ async function getPortfolioValueHistory(req,res){
                 const chart_data_response = [];
                 const token_data_response = [];
                 const block_token_data_response = [];
-                let start = moment().format("YYYY-MM-DD");
+                //let start = moment().format("YYYY-MM-DD");
                 let end = moment().subtract(30, 'days').format("YYYY-MM-DD");
-                console.log(start+" - "+end);
 
                 for(i=0;i<=30;i++){ //For 30 Days
                     let valueUsd_data = 0;

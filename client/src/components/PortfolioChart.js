@@ -5,6 +5,7 @@ import {PortfolioLables} from './PortfolioLables';
 import { AppContext } from "../context/AppContext";
 import { ShimmerCircularImage,ShimmerTable } from "react-shimmer-effects";
 import { setChartData,getSumArrayWith2Digits } from '../helper/helper'
+import { dummyDataForPortfolio } from '../helper/dummyData'
 import * as api from '../api'
 
 Chart.register(ArcElement);
@@ -13,7 +14,7 @@ export const PortfolioChart = () => {
   const [isLoading,setIsLoading] = useState(1);
   const [isErr,setIsErr] = useState(0);
   const [portfolioData,setPortfolioData] = useState([]);
-  const { walletAddress,walletNetworkId,holdingBlockChanged} = useContext(AppContext);
+  const { walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData} = useContext(AppContext);
 
   let graph_component;
   let list_component;
@@ -26,14 +27,21 @@ export const PortfolioChart = () => {
         if(holdingBlockChanged){
             fetchDataWithOutShimmer({chain_id:walletNetworkId,address:walletAddress})
         }
-    }, [walletAddress,walletNetworkId,holdingBlockChanged])
+        if(loadDummyData){
+          let data = dummyDataForPortfolio();
+          setPortfolioData(data);  
+          document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
+          setIsLoading(0);
+        }
+    }, [walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData])
 
     const fetchDataWithOutShimmer = async(params) => {
       let data = await api.fetchPortfolio(params);
       //console.log(data);
       if(data!="") { 
         setPortfolioData(data);  
-          document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
+        document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
+        setIsLoading(0);
       }
   }
   const fetchData = async(params) => {
@@ -41,7 +49,7 @@ export const PortfolioChart = () => {
           setIsLoading(1);
           const data = await api.fetchPortfolio(params);
           if(data!="") { 
-            console.log(data);
+            //console.log(data);
               setPortfolioData(data);  
               document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
               setIsLoading(0);
@@ -58,7 +66,7 @@ export const PortfolioChart = () => {
   
   if(isLoading){
     graph_component = <ShimmerCircularImage size={300} className="dark-shimmer py-8"/>;
-    list_component = <div className="dark-shimmer"><ShimmerTable row={5} col={2} className="dark-shimmer"/></div>;
+    list_component = <div className="dark-shimmer ml-4"><ShimmerTable row={5} col={2} className="dark-shimmer"/></div>;
     
   }else if(isLoading==0 && isErr==0){
       graph_component = <Doughnut { ...setChartData(portfolioData.data[0].graph_data,portfolioData.data[0].graph_token_colors) } />;

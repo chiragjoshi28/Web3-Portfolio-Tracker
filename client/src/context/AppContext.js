@@ -13,6 +13,7 @@ export const AppProvider = ({children}) => {
     const [walletCurrency, setWalletCurrency] = useState("")
     const [walletBalance, setWalletBalance] = useState("")
     const [holdingBlockChanged, setHoldingBlockChanged] = useState("")
+    const [loadDummyData, setLoadDummyData] = useState(false)
 
     const chainList =[
         {
@@ -64,6 +65,7 @@ export const AppProvider = ({children}) => {
             
           } else {
             console.log("No accounts found");
+            setLoadDummyData(true);
           }
         } catch (error) {
           console.log(error);
@@ -76,6 +78,7 @@ export const AppProvider = ({children}) => {
           const accounts = await ethereum.request({ method: "eth_requestAccounts", });
     
           setWalletAddress(accounts[0]);
+          setLoadDummyData(false);
             
             if(window.ethereum.networkVersion){
                 chainList.map( (v,i) => {
@@ -115,7 +118,7 @@ export const AppProvider = ({children}) => {
 
     useEffect(() => {
         checkIfWalletIsConnect();
-        console.log(walletAddress+" - "+walletCurrency+" - "+walletBalance);
+        //console.log(walletAddress+" - "+walletCurrency+" - "+walletBalance);
       },[walletAddress,walletBalance]);
     
       return (
@@ -127,7 +130,8 @@ export const AppProvider = ({children}) => {
             walletNetworkId,
             walletCurrency,
             holdingBlockChanged,
-            setHoldingBlockChanged
+            setHoldingBlockChanged,
+            loadDummyData
           }}
         >
           {children}

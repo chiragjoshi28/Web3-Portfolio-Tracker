@@ -2,7 +2,6 @@ import React from 'react'
 import { getPrecisedData,setStringMaxChar } from '../helper/helper'
 
 export const PortfolioLables = (props) => {
-    console.log(props)
     return (
         <div className="Portfolio-Token-List pt-4">
         {(props.TokenList.length) 

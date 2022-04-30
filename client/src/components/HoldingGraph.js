@@ -3,6 +3,7 @@ import { AreaChart,Area,Tooltip,ResponsiveContainer } from "recharts";
 import { HoldingList } from './HoldingList';
 import { AppContext } from "../context/AppContext";
 import { getPrecisedData } from '../helper/helper'
+import { dummyDataForHoldings } from '../helper/dummyData'
 import { ShimmerThumbnail,ShimmerTable } from "react-shimmer-effects";
 import * as api from '../api'
 
@@ -12,9 +13,9 @@ import * as api from '../api'
     const [isErr,setIsErr] = useState(0);
     const [holdingData,setHoldingData] = useState([]);
 
-    const { walletAddress,walletNetworkId,holdingBlockChanged} = useContext(AppContext);
+    const { walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData} = useContext(AppContext);
     
-
+  
     let graph_component;
     let list_component;
 
@@ -25,7 +26,15 @@ import * as api from '../api'
         if(holdingBlockChanged){
             fetchDataWithOutShimmer({chain_id:walletNetworkId,address:walletAddress})
         }
-    }, [walletAddress,walletNetworkId,holdingBlockChanged])
+        if(loadDummyData){
+            
+            let data = dummyDataForHoldings()
+            setHoldingData(data); 
+            document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
+            document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
+            setIsLoading(0);
+        }
+    }, [walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData])
 
     const fetchDataWithOutShimmer = async(params) => {
         let data = await api.fetchHolding(params);
@@ -40,7 +49,7 @@ import * as api from '../api'
         try{
             setIsLoading(1);
             const data = await api.fetchHolding(params);
-            console.log(data);
+            //console.log(data);
             if(data!="") { 
                 setHoldingData(data);  
                 document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
@@ -68,7 +77,7 @@ import * as api from '../api'
    
     
     if(isLoading){
-        graph_component = <ShimmerThumbnail height={230} rounded className="dark-shimmer"/>;
+        graph_component = <ShimmerThumbnail height={228} rounded className="dark-shimmer"/>;
         list_component = <div className="dark-shimmer"><ShimmerTable row={5} col={5} className="dark-shimmer"/></div>;
         
     }else if(isLoading==0 && isErr==0){
@@ -83,7 +92,7 @@ import * as api from '../api'
         <div className="holding-graph mx-auto w-full md:w-12/12 lg:w-7/12 lg:pr-0 pr-0">
             <div className="flex-wrap justify-content px-2 py-2 bg-theme text-white">
                 <h4 className="w-full p-2 text-center tracking-widest uppercase font-bold">Holdings Overview</h4>
-                <h1 className="w-full p-2 text-center text-5xl font-orbitron tracking-normal uppercase font-black">$ <span className="font-orbitron" id="holdingBalance"></span></h1>                         
+                <h1 className="w-full p-2 text-center text-5xl font-orbitron tracking-normal uppercase font-black">$ <span className="font-orbitron" id="holdingBalance">0.00</span></h1>                         
                 {graph_component}
                 <h4 className="w-full p-2 text-center tracking-widest font-orbitron font-bold" id="holdingBalanceDate"></h4>
             </div>
