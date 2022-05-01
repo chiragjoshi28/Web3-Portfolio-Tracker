@@ -32,7 +32,6 @@ body{
   background-color: var(--color-bg);
   color: var(--color-gray);
 }
-
 .bg-theme{
   background-color: var(--color-bg);
 }
@@ -45,6 +44,7 @@ body{
 .bg-neon-green{
   background-color: var(--color-green);
 }
+
 .chart .title{
   position:absolute;
   top:40%;

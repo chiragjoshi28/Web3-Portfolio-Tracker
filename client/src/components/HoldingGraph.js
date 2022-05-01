@@ -5,36 +5,38 @@ import { AppContext } from "../context/AppContext";
 import { getPrecisedData } from '../helper/helper'
 import { dummyDataForHoldings } from '../helper/dummyData'
 import { ShimmerThumbnail,ShimmerTable } from "react-shimmer-effects";
+import { NoData } from './NoData'
 import * as api from '../api'
 
   export const HoldingGraph = () => {
       
-    const [isLoading,setIsLoading] = useState(1);
-    const [isErr,setIsErr] = useState(0);
+    const [actionUi,setActionUi] = useState(1); // 1- Loading, 2-Success, 3-ERR, 4-Empty Data
     const [holdingData,setHoldingData] = useState([]);
 
-    const { walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData} = useContext(AppContext);
+    const { walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData,newUserDataLoading} = useContext(AppContext);
     
-  
     let graph_component;
     let list_component;
+    let MainClassName = "";
+    let NoData_component;
+    let OverviewClassName = "hidden";
 
     useEffect(() => {
-        if(walletAddress && walletNetworkId && !holdingBlockChanged){
+        
+        if(walletAddress && walletNetworkId && !holdingBlockChanged && newUserDataLoading==2){
            fetchData({chain_id:walletNetworkId,address:walletAddress})
         }
         if(holdingBlockChanged){
             fetchDataWithOutShimmer({chain_id:walletNetworkId,address:walletAddress})
         }
         if(loadDummyData){
-            
             let data = dummyDataForHoldings()
             setHoldingData(data); 
             document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
             document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
-            setIsLoading(0);
+            setActionUi(2);
         }
-    }, [walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData])
+    }, [walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData,newUserDataLoading])
 
     const fetchDataWithOutShimmer = async(params) => {
         let data = await api.fetchHolding(params);
@@ -47,20 +49,17 @@ import * as api from '../api'
     }
     const fetchData = async(params) => {
         try{
-            setIsLoading(1);
             const data = await api.fetchHolding(params);
-            //console.log(data);
-            if(data!=="") { 
+            if(data.data!="") { 
                 setHoldingData(data);  
                 document.getElementById('holdingBalance').innerHTML= getPrecisedData(data.data[0].chart_data_response.at(-1).balance);
                 document.getElementById('holdingBalanceDate').innerHTML = data.data[0].chart_data_response.at(-1).date;
-                setIsLoading(0);
+                setActionUi(2);
             }
-            else { setIsErr(1); }
+            else { setActionUi(4); }
             
         }catch(err){
-            setIsErr(1);
-            setIsLoading(0);
+            setActionUi(3);
             console.log(err);
         }
     }
@@ -76,28 +75,38 @@ import * as api from '../api'
       };
    
     
-    if(isLoading){
-        graph_component = <ShimmerThumbnail height={228} rounded className="dark-shimmer"/>;
+    if(actionUi==1){
+        graph_component = <ShimmerThumbnail height={232} rounded className="dark-shimmer"/>;
         list_component = <div className="dark-shimmer"><ShimmerTable row={5} col={5} className="dark-shimmer"/></div>;
-        
-    }else if(!isLoading && !isErr){
+    }else if(actionUi==2){
         graph_component = graph(holdingData.data);
+        OverviewClassName=""
         list_component = <HoldingList TokenData={holdingData.data[0].token_data_response} BlockTokenData={holdingData.data[0].block_token_data_response}></HoldingList>
-    }else if(isErr){
+    }else if(actionUi==3){
         graph_component = <div>Error While Fetching</div>;
         list_component = <div className="text-white">Error While Fetching</div>;
+    }else if(actionUi==4){
+        graph_component = <div>No Data to Track</div>;
+        list_component = <div className="text-white">No Data to Track</div>;
+        MainClassName="hidden"
+        NoData_component = <NoData></NoData>
     }
     
     return (
-        <div className="holding-graph mx-auto w-full md:w-12/12 lg:w-7/12 lg:pr-0 pr-0">
+        <>
+        {NoData_component}
+        <div className={MainClassName+" holding-graph mx-auto w-full md:w-12/12 lg:w-7/12 lg:pr-0 pr-0"} >
             <div className="flex-wrap justify-content px-2 py-2 bg-theme text-white">
-                <h4 className="w-full p-2 text-center tracking-widest uppercase font-bold">Holdings Overview</h4>
-                <h1 className="w-full p-2 text-center text-5xl font-orbitron tracking-normal uppercase font-black">$ <span className="font-orbitron" id="holdingBalance">0.00</span></h1>                         
+                <div className={OverviewClassName}>
+                    <h4 className="w-full p-2 text-center tracking-widest uppercase font-bold">Holdings Overview</h4>
+                    <h1 className="w-full p-2 text-center text-5xl font-orbitron tracking-normal uppercase font-black">$ <span className="font-orbitron" id="holdingBalance">0.00</span></h1>                         
+                </div>
                 {graph_component}
                 <h4 className="w-full p-2 text-center tracking-widest font-orbitron font-bold" id="holdingBalanceDate"></h4>
             </div>
                 {list_component}
         </div>
+        </>
     )
 
     function graph( data ){

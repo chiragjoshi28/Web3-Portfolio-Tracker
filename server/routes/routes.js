@@ -20,5 +20,9 @@ routes.route('/api/blockShitCoin')
 routes.route('/api/getTokenPortfolio')
 .get(TransactionController.getTokenPortfolio);
 
+//http://localhost:8080/api/checkUser_NextUpdate?address=0x6f6699652d4733ad422a610780c43cfd919d9a86&chain_id=56
+routes.route('/api/checkUser_NextUpdate')
+.get(TransactionController.checkUser_NextUpdate);
+
 
 module.exports = routes;

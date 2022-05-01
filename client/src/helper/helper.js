@@ -18,7 +18,9 @@ export const getPrecisedData = (value,precisionNumber="") => {
     }
     return '0.00';
 }
-
+export const beautifyAddress = (address) => {
+  return address.substring(0, 5)+"..."+address.slice(-5);
+}
 export const setStringMaxChar = (str,max_length) => {
   if(str.length >= max_length){
     return str.substring(0, 5)+" ... "+str.slice(-5);

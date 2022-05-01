@@ -11,17 +11,17 @@ import * as api from '../api'
 Chart.register(ArcElement);
   
 export const PortfolioChart = () => {
-  const [isLoading,setIsLoading] = useState(1);
-  const [isErr,setIsErr] = useState(0);
+  const [actionUi,setActionUi] = useState(1); // 1- Loading, 2-Success, 3-ERR, 4-Empty Data
   const [portfolioData,setPortfolioData] = useState([]);
-  const { walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData} = useContext(AppContext);
+  const { walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData,newUserDataLoading} = useContext(AppContext);
 
   let graph_component;
   let list_component;
-  let graph_loader;
+  let MainClassName = "";
+  let graph_circle_class;
 
     useEffect(() => {
-        if(walletAddress && walletNetworkId && !holdingBlockChanged){
+        if(walletAddress && walletNetworkId && !holdingBlockChanged && newUserDataLoading==2){
            fetchData({chain_id:walletNetworkId,address:walletAddress})
         }
         if(holdingBlockChanged){
@@ -31,9 +31,10 @@ export const PortfolioChart = () => {
           let data = dummyDataForPortfolio();
           setPortfolioData(data);  
           document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
-          setIsLoading(0);
+          setActionUi(1);
         }
-    }, [walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData])
+        
+    }, [walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData,newUserDataLoading])
 
     const fetchDataWithOutShimmer = async(params) => {
       let data = await api.fetchPortfolio(params);
@@ -41,55 +42,62 @@ export const PortfolioChart = () => {
       if(data!=="") { 
         setPortfolioData(data);  
         document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
-        setIsLoading(0);
+        setActionUi(2);
       }
   }
   const fetchData = async(params) => {
       try{
-          setIsLoading(1);
+        setActionUi(1);
           const data = await api.fetchPortfolio(params);
-          if(data!=="") { 
+          if(data.data!=="") { 
             //console.log(data);
               setPortfolioData(data);  
               document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
-              setIsLoading(0);
+              setActionUi(2);
           }
-          else { setIsErr(1); }
+          else { setActionUi(4); }
           
       }catch(err){
-          setIsErr(1);
-          setIsLoading(0);
+          setActionUi(3);
           console.log(err);
       }
   }
 
   
-  if(isLoading){
-    graph_component = <ShimmerCircularImage size={300} className="dark-shimmer py-8"/>;
+  if(actionUi==1){
+    graph_circle_class = "hidden";
+    graph_component = <ShimmerCircularImage size={200} className="dark-shimmer py-8"/>;
     list_component = <div className="dark-shimmer ml-4"><ShimmerTable row={5} col={2} className="dark-shimmer"/></div>;
     
-  }else if(!isLoading && !isErr){
+  }else if(actionUi==2){
+    graph_circle_class = "";
       graph_component = <Doughnut { ...setChartData(portfolioData.data[0].graph_data,portfolioData.data[0].graph_token_colors) } />;
       list_component = <PortfolioLables TokenList={portfolioData.data[0].graph_token[0]} TokenColor={portfolioData.data[0].graph_token_colors}></PortfolioLables>
-  }else if(isErr){
-      graph_component = <div>Error While Fetching</div>;
-      list_component = <div className="text-white">Error While Fetching</div>;
+  }else if(actionUi==3){
+    graph_circle_class = "hidden";
+    graph_component = "Error While Fetching";
+    list_component = "Error While Fetching";
+  }else if(actionUi==4){
+    graph_circle_class = "hidden";
+    graph_component = "";
+    list_component = "";
+    MainClassName = "hidden"
   }
 
     return (
-        <div className="portfolio-chart lg:w-5/12 md:w-12/12 rounded-lg pt-0 lg:pl-0 p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
+        <div className={" portfolio-chart lg:w-5/12 md:w-12/12 rounded-lg pt-0 lg:pl-0 p-8 md:ml-auto w-full mt-10 md:mt-0 "+MainClassName}>
             <div className="flex justify-content px-2 py-8 bg-theme text-white">
                 <div className="item mx-auto">
-                  {graph_loader}
                     <div className="chart relative">
-   
                       {  graph_component } 
-                      <div className="title_background"></div>
-                      <h4 className="mb-4 w-full font title text-center">Wallet Value
-                        <span className="block text-2xl font-bold font-orbitron">$ 
-                          <span className="font-orbitron" id="wallet_value">0.00</span> 
-                        </span>
-                      </h4>
+                      <div className={graph_circle_class}>
+                        <div className="title_background"></div>
+                        <h4 className="mb-4 w-full font title text-center">Wallet Value
+                          <span className="block text-2xl font-bold font-orbitron">$ 
+                            <span className="font-orbitron" id="wallet_value">0.00</span> 
+                          </span>
+                        </h4>
+                      </div>
                     </div>
                 </div>
             </div>

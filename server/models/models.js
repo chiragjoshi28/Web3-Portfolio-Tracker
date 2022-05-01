@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 //Users => field => ['address','created_at']
 const users_model = new Schema({
-    address:{type: String},
+    address:{type: String,unique:true,required:true,dropDups: true },
     created_at:{ type : Date, default : Date.now}
 })
 

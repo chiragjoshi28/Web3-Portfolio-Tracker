@@ -8,12 +8,13 @@ const { ethereum } = window;
 
 export const AppProvider = ({children}) => {
 
-    const [walletAddress, setWalletAddress] = useState("");
-    const [walletNetworkId, setWalletNetworkId] = useState("");
+    const [walletAddress, setWalletAddress] = useState("")
+    const [walletNetworkId, setWalletNetworkId] = useState("")
     const [walletCurrency, setWalletCurrency] = useState("")
     const [walletBalance, setWalletBalance] = useState("")
     const [holdingBlockChanged, setHoldingBlockChanged] = useState("")
     const [loadDummyData, setLoadDummyData] = useState(false)
+    const [newUserDataLoading, setNewUserDataLoading] = useState(0)//0-No Action //1-Set Loader //2-Load Data
 
     const chainList =[
         {
@@ -32,7 +33,8 @@ export const AppProvider = ({children}) => {
             currency:'MATIC',
         },
 
-    ]
+    ];
+    
     const checkIfWalletIsConnect = async () => {
         try {
           if (!ethereum) return alert("Please install MetaMask.");
@@ -41,10 +43,12 @@ export const AppProvider = ({children}) => {
     
           if (accounts.length) {
             setWalletAddress(accounts[0]);
+            setLoadDummyData(false);
             
+          
             if(window.ethereum.networkVersion){
                 chainList.map( (v,i) => {
-                    if(window.ethereum.networkVersion === v.id)
+                    if(window.ethereum.networkVersion == v.id)
                     {
                         setWalletNetworkId(v.id);
                         setWalletCurrency(v.currency);
@@ -71,6 +75,7 @@ export const AppProvider = ({children}) => {
           console.log(error);
         }
     };
+
     const connectWallet = async () => {
         try {
           if (!ethereum) return alert("Please install MetaMask.");
@@ -118,7 +123,7 @@ export const AppProvider = ({children}) => {
 
     useEffect(() => {
         checkIfWalletIsConnect();
-        //console.log(walletAddress+" - "+walletCurrency+" - "+walletBalance);
+        console.log(walletAddress+" - "+walletCurrency+" - "+walletBalance);
       },[walletAddress,walletBalance]);
     
       return (
@@ -131,10 +136,14 @@ export const AppProvider = ({children}) => {
             walletCurrency,
             holdingBlockChanged,
             setHoldingBlockChanged,
-            loadDummyData
+            loadDummyData,
+            setNewUserDataLoading,
+            newUserDataLoading
           }}
         >
           {children}
         </AppContext.Provider>
       )
-    }
+}
+
+

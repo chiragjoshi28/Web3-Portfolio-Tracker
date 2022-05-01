@@ -16,6 +16,7 @@
     "react-icons": "^4.3.1",
     "react-scripts": "5.0.0",
     "react-shimmer-effects": "^1.0.2",
+    "react-top-loading-bar": "^2.1.0",
     "recharts": "^2.1.9"
   },
   "scripts": {

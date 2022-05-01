@@ -20,10 +20,10 @@ async function getPortfolioValueHistory(req,res){
             valueUsd:{$ne:null},
         }).sort({valueUsd:-1})
         .then(result => {
-
+            
             const ChartData = async _ => {
-                console.log("Start");
-
+                //console.log("Start");
+                const holdingItemsCount = 0; 
                 const chart_data_response = [];
                 const token_data_response = [];
                 const block_token_data_response = [];
@@ -41,8 +41,6 @@ async function getPortfolioValueHistory(req,res){
                                 if(v.close.quote && !v1.blockStatus) { valueUsd_data = valueUsd_data + v.close.quote; } //(here quote=balance*price )
                             }
                         })
-
-                        
 
                         if(i==0 && v1.balance && v1.priceUsd){
                             // Only Inserting Token we are useful
@@ -70,11 +68,16 @@ async function getPortfolioValueHistory(req,res){
                     if(valueUsd_data) { chart_data_response.push(chart_obj); }
                     end = moment(end).add(1,'days').format("YYYY-MM-DD");
                 }
-                console.log('End');
+                //console.log('End');
                 result2.push({chart_data_response,token_data_response,block_token_data_response})
             };
-               ChartData();
-               res.json(result2);
+
+            if(result!=""){
+            ChartData();
+            res.json(result2);
+            }else{
+                res.json()
+            }
         })        
     }
 }
@@ -119,13 +122,39 @@ async function getTokenPortfolio(req,res){
                 })     
                 response.push({graph_token:graph_token,graph_data:graph_data,graph_token_colors:helper.getRGB_Array(graph_data.length)})
             }
-            WaitForData();
-            res.json(response);
+            if(result!=""){
+                WaitForData();
+                res.json(response);
+            }else{
+                res.json();
+            }
         });
     }
 }
+
+async function checkUser_NextUpdate(req,res){
+    chain_id = req.query.chain_id;
+    address = req.query.address;
+    if(chain_id && address){
+    model.Holding.findOne({
+    chain_id:chain_id,
+    user_address:address
+    }).then(result=>{
+        if(result){
+        return res.json({UserExist:1,NextUpdateTime:result.next_update_at})
+        }else{
+        return res.json({UserExist:0,NextUpdateTime:null})
+        }
+    
+    })
+    }
+    else{  res.status(300).json("Incorrect Data"); }
+}
+
+    
 module.exports = {
     getPortfolioValueHistory,
     blockShitCoin,
-    getTokenPortfolio
+    getTokenPortfolio,
+    checkUser_NextUpdate
 }
