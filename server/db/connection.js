@@ -8,5 +8,4 @@ const conn = mongoose.connect(process.env.ATLAS_URL)
         console.log("Connection Refused "+err)
     });
 
-
 module.exports = conn;

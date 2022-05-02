@@ -33,6 +33,7 @@
   "homepage": "https://github.com/chirag5954/Web3-Portfolio-Tracker#readme",
   "dependencies": {
     "concurrently": "^7.1.0",
+    "dotenv": "^16.0.0",
     "nodemon": "^2.0.16"
   }
 }

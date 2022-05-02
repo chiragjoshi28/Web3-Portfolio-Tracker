@@ -1,4 +1,6 @@
 const routes = require('express').Router()
+const dotenv = require('dotenv');
+dotenv.config();
 const TransactionController = require('../controller/TransactionController')
 const CovalentApiController = require('../controller/CovalentApiController')
 

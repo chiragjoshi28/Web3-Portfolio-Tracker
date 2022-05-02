@@ -1,7 +1,6 @@
 const model = require('../models/models');
 const moment = require('moment');
 const helper = require('../helper/helper')
-require('dotenv').config({ path : "./config.env"});
 const TRACK_USD_VALUE_ABOVE=0.1
 
 async function getPortfolioValueHistory(req,res){

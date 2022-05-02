@@ -1,10 +1,10 @@
-require('dotenv').config({ path : "./config.env"});
 const axios = require('axios').default;
 const model = require('../models/models');
 
-covalent_key = process.env.COVALENT_API_KEY;
+const covalent_key = process.env.COVALENT_API_KEY;
 
 function getPortfolioValueHistory_Covalent(req,res) {
+    if(!covalent_key) return res.status(400).json("API KEY MISSING");
     if(!req.body) return res.status(400).json("Post HTTP Data not Provided");
     chain_id = req.query.chain_id;
     address = req.query.address;
