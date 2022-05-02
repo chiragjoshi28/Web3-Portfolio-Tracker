@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const port = process.env.PORT;
+const path = require('path');
 const con = require('./db/connection');
 
 //use middleware
