@@ -1,0 +1,38 @@
+{
+  "name": "portfolio_tracker",
+  "version": "1.0.0",
+  "description": "Web3 Decentralised Portofilo tracker with MetaMask and Covalent",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup": "npm install && cd client && npm install",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon server/server.js",
+    "client": "cd client && npm run start",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "cd client/src && npm install && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chirag5954/Web3-Portfolio-Tracker.git"
+  },
+  "keywords": [
+    "portfolio",
+    "tracker",
+    "metamask",
+    "decentralised",
+    "assets",
+    "dex",
+    "defi"
+  ],
+  "author": "Chirag Joshi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chirag5954/Web3-Portfolio-Tracker/issues"
+  },
+  "homepage": "https://github.com/chirag5954/Web3-Portfolio-Tracker#readme",
+  "dependencies": {
+    "concurrently": "^7.1.0",
+    "nodemon": "^2.0.16"
+  }
+}

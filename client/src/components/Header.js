@@ -13,13 +13,22 @@ export const Header = () => {
     const ref = useRef(null)
     const [loaderInfo,setLoaderInfo] = useState(0);
     let loaderInfo_component = "";
+    const MINUTE_MS = 30000;
     useEffect(()=>{
+        const interval = setInterval(() => {
+            if(walletAddress && walletNetworkId){
+                checkUser_NextUpdate({chain_id:walletNetworkId,address:walletAddress})
+            }
+          }, MINUTE_MS);
+          
         if(walletAddress && walletNetworkId){
             checkUser_NextUpdate({chain_id:walletNetworkId,address:walletAddress})
         }
+        return () => clearInterval(interval);
     },[walletAddress,walletNetworkId]);
 
     const checkUser_NextUpdate = async(params) => {
+        if(!walletNetworkId && !walletAddress) return 0;
         ref.current.continuousStart()
         try{
         let data = await api.checkUser_NextUpdate(params);
