@@ -9,7 +9,7 @@ import * as api from '../api'
 
 
 export const Header = () => {
-    const { walletAddress,connectWallet,walletNetworkId,walletBalance,walletCurrency,newUserDataLoading,setNewUserDataLoading} = useContext(AppContext);
+    const { walletAddress,connectWallet,walletNetworkId,walletBalance,walletCurrency,loadDummyData,setNewUserDataLoading} = useContext(AppContext);
     const ref = useRef(null)
     const [loaderInfo,setLoaderInfo] = useState(0);
     let loaderInfo_component = "";
@@ -24,8 +24,11 @@ export const Header = () => {
         if(walletAddress && walletNetworkId){
             checkUser_NextUpdate({chain_id:walletNetworkId,address:walletAddress})
         }
+        if(loadDummyData){
+            setLoaderInfo(1);
+        }
         return () => clearInterval(interval);
-    },[walletAddress,walletNetworkId]);
+    },[walletAddress,walletNetworkId,loadDummyData]);
 
     const checkUser_NextUpdate = async(params) => {
         if(!walletNetworkId && !walletAddress) return 0;

@@ -31,7 +31,7 @@ export const PortfolioChart = () => {
           let data = dummyDataForPortfolio();
           setPortfolioData(data);  
           document.getElementById('wallet_value').innerHTML = getSumArrayWith2Digits(data.data[0].graph_data);
-          setActionUi(1);
+          setActionUi(2);
         }
         
     }, [walletAddress,walletNetworkId,holdingBlockChanged,loadDummyData,newUserDataLoading])
