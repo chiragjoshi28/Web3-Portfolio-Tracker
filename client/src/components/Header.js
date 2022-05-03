@@ -9,7 +9,7 @@ import * as api from '../api'
 
 
 export const Header = () => {
-    const { walletAddress,connectWallet,walletNetworkId,walletBalance,walletCurrency,loadDummyData,setNewUserDataLoading} = useContext(AppContext);
+    const { walletAddress,connectWallet,walletNetworkId,walletBalance,walletCurrency,loadDummyData,setNewUserDataLoading,metamaskAvailable} = useContext(AppContext);
     const ref = useRef(null)
     const [loaderInfo,setLoaderInfo] = useState(0);
     let loaderInfo_component = "";
@@ -85,7 +85,8 @@ export const Header = () => {
                     ?   ( <p className="rounded-lg px-2 py-1 text-white bg-gray-700 w-max">{walletBalance} {walletCurrency}
                             <button className="rounded-lg px-2 ml-2 text-white bg-theme-2" onClick={connectWallet}>{beautifyAddress(walletAddress)}</button>
                         </p> )
-                    :  (<button className="rounded-lg px-2 py-1 text-white bg-blue-600" onClick={connectWallet}>Connect</button>)
+                    :  (metamaskAvailable) ? (<button className="rounded-lg px-2 py-1 text-white bg-blue-600" onClick={connectWallet}>Connect</button>)
+                        : (<a href="https://metamask.io/download/"><button className="rounded-lg px-2 py-1 text-white bg-blue-600">Please Install MetaMask Wallet</button> </a>)
                     }                   
                 </div>
             </div>

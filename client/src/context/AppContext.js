@@ -13,6 +13,7 @@ export const AppProvider = ({children}) => {
     const [walletCurrency, setWalletCurrency] = useState("")
     const [walletBalance, setWalletBalance] = useState("")
     const [holdingBlockChanged, setHoldingBlockChanged] = useState("")
+    const [metamaskAvailable, setMetamaskAvailable] = useState(false)
     const [loadDummyData, setLoadDummyData] = useState(false)
     const [newUserDataLoading, setNewUserDataLoading] = useState(0)//0-No Action //1-Set Loader //2-Load Data
 
@@ -37,8 +38,11 @@ export const AppProvider = ({children}) => {
     
     const checkIfWalletIsConnect = async () => {
         try {
-          if (!ethereum) return alert("Please install MetaMask.");
-    
+          if (!ethereum) { 
+            setLoadDummyData(true); 
+            return 0; 
+          }
+          setMetamaskAvailable(true);
           const accounts = await ethereum.request({ method: "eth_accounts" });
     
           if (accounts.length) {
@@ -112,14 +116,15 @@ export const AppProvider = ({children}) => {
           throw new Error("No ethereum object");
         }
     };
+    if(ethereum){
+      ethereum.on('chainChanged', function () {
+          window.location.reload(); 
+      });
 
-    window.ethereum.on('chainChanged', function () {
-        window.location.reload(); 
-    });
-
-    window.ethereum.on('accountsChanged', function (accounts) {
-        window.location.reload();
-    });
+      ethereum.on('accountsChanged', function (accounts) {
+          window.location.reload();
+      });
+    }
 
     useEffect(() => {
         checkIfWalletIsConnect();
@@ -138,7 +143,8 @@ export const AppProvider = ({children}) => {
             setHoldingBlockChanged,
             loadDummyData,
             setNewUserDataLoading,
-            newUserDataLoading
+            newUserDataLoading,
+            metamaskAvailable
           }}
         >
           {children}
