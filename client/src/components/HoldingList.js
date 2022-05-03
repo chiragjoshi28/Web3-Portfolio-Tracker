@@ -47,7 +47,7 @@ export const HoldingList = (props) => {
                     { props.TokenData.map((value,index)=> <TokenList key={index} data={value} handlerBlock={blockHandlerClick}></TokenList> ) }
                 </tbody>
             </table>
-            : 'No Holding Found for this Token'
+            : ''
             }
             { 
             (props.BlockTokenData.length)
@@ -65,7 +65,7 @@ export const HoldingList = (props) => {
                     { props.BlockTokenData.map((value,index)=> <BlockTokenList key={index} data={value} handlerUnblock={unblockHandlerClick}></BlockTokenList> ) }
                 </tbody>
             </table>
-            : 'No Holding Found for this Token'
+            : ''
             }
 
         </div>
